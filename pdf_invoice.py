@@ -2,6 +2,7 @@ from base64 import b64encode
 import streamlit as st
 from datetime import datetime
 from reportlab.pdfgen.canvas import Canvas
+from reportlab.lib.colors import green, blue, red, black
 
 st.title('DYNAMIC INVOICE GENERATOR')
 
@@ -10,13 +11,13 @@ st.write('Enter your company and product details, then, your invoice will be gen
 with st.form('Template Form'):
     left, right = st.columns((2,2))
     logo = left.text_input('Company Logo', value='tnw.png')
-    company_name = right.text_input('Company Name', value='JONABEN ENTERPRISES LIMITED')
+    company_name = right.text_input('Company Name', value='JONABEN INVESTMENTS LIMITED')
     address = left.text_input('Company Address', value='12 London Way')
     location = right.text_input('Company Location', value='Istanbul, Turkey')
     reg_num = left.text_input('Registration Number', value='234558B6VX')
     invoice_num = right.text_input('Invoice Number', value='6579')
     date = datetime.today().strftime('%B %-d, %Y')
-    customer_name = left.text_input('Customer Name', value='Mr. Bill Gates')
+    customer_name = left.text_input('Customer Name', value='Mr. Roger Zimmerman')
     company_number = right.text_input('Company Phone Number', value='012394736')
 
     st.header('Product 1')
@@ -63,8 +64,9 @@ with st.form('Template Form'):
 
 
 
-def template():
-    c = Canvas("invoice.pdf", pagesize=(230, 250), bottomup=0)
+def generate_pdf(c):
+
+    # c = Canvas(file, pagesize=(230, 250), bottomup=0)
     # Logo Section
     # Setting th origin to (10,40)
     c.translate(10, 40)
@@ -80,10 +82,12 @@ def template():
     c.translate(-10, -40)
     # Setting the font for Name title of company
     c.setFont("Helvetica-Bold", 10)
+    c.setFillColor(red)
     # Inserting the name of the company
     c.drawCentredString(145, 20, company_name)
     # For under lining the title
     #c.line(70,52, 180, 22)
+    c.setFillColor(green)
     # Changing the font size for Specifying Address
     c.setFont("Helvetica-Bold", 5)
     c.drawCentredString(125,30, address)
@@ -93,21 +97,23 @@ def template():
     c.drawCentredString(125,42, reg_num)
 
     # Line Seprating the page header from the body
+    c.setFillColor(blue)
     c.line(5, 45, 225, 45)
 
     # Document Information
     # Changing the font for Document title
     c.setFont("Courier-Bold", 8)
     c.drawCentredString(120,55, "INVOICE")
-
-    # This Block Consists of Costumer Details
+    c.setFillColor(blue)
+    # This Block Consists of Custumer Details
     c.roundRect(15, 63, 200, 40, 10, stroke=1, fill=0)
     c.setFont("Times-Bold", 5)
     c.drawRightString(70, 70, "INVOICE No.:  " + invoice_num)
     c.drawRightString(81, 80,"DATE :  "+ date)
-    c.drawRightString(105, 90,"CUSTOMER NAME:  " + customer_name)
+    c.drawRightString(125, 90,"CUSTOMER NAME:  " + customer_name)
     c.drawRightString(79, 100,"PHONE No.:  " + company_number)
 
+    c.setFillColor(black)
     # This Block Consists of Item Description
     c.roundRect(15, 108, 200, 130, 10, stroke=1, fill=0)
     c.line(15, 120, 215, 120)
@@ -123,6 +129,7 @@ def template():
     c.line(115,108,115,220)
     c.line(140,108,140,220)
     c.line(160,108,160,220)
+    c.setFillColor(black)
     # Inputing Sales details for product 1
     c.line(15, 135, 215, 135)
     c.drawCentredString(23, 130, '1')
@@ -179,24 +186,22 @@ def template():
 
 
 
-# embed and display PDF
-
-
-with open('invoice.pdf', 'rb') as pdf_file:
-    pdf_byte = pdf_file.read()
-
-st.download_button(label="Download Invoice",
-    data=pdf_byte,
-    file_name="rceipt.pdf",
-    mime = 'application/octet-stream')
+c = Canvas('sample.pdf', pagesize=(230,250), bottomup=0)
+#c.showPage()
+#c.save()
 
 
 def show_pdf():
-    with open('invoice.pdf', 'rb') as f:
+    with open('sample.pdf', 'rb') as f:
         base64_pdf = b64encode(f.read()).decode('utf-8')
     pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf"></iframe>'
     st.markdown(pdf_display, unsafe_allow_html=True)
 
 if submit:
-    template()
+    generate_pdf(c)
     show_pdf()
+
+with open('sample.pdf', 'rb') as pdf_file:
+    pdf_byte = pdf_file.read()
+
+st.download_button(label='Download Invoice', data=pdf_byte, file_name='receipt.pdf', mime='application/octet-stream')

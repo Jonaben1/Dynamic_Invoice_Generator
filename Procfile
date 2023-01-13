@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit run invoice.py
+web: sh setup.sh && streamlit run pdf_invoice.py
