@@ -1,4 +1,3 @@
-from base64 import b64encode
 import streamlit as st
 from datetime import datetime
 from reportlab.pdfgen.canvas import Canvas
