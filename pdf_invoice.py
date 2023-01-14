@@ -2,6 +2,8 @@ import streamlit as st
 from datetime import datetime
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.colors import blue, red, black
+from base64 import b64encode
+
 
 st.title('DYNAMIC INVOICE GENERATOR')
 st.write("Created and designed by [Jonaben](https://www.linkedin.com/in/jonathan-ben-okah-7b507725b)")
